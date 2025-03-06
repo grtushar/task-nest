@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Task Manager</h1>
+        <div class="task-input">
+            <input type="text" id="taskTitle" placeholder="Enter task title">
+            <button onclick="addTask()">Add Task</button>
+        </div>
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5002/tasks';
+
+        // Fetch and display tasks
+        function fetchTasks() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(tasks => {
+                    const taskList = document.getElementById('taskList');
+                    taskList.innerHTML = '';
+                    tasks.forEach(task => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `${task.title} - ${task.status}
+                            <button onclick="completeTask(${task.id})">✔</button>
+                            <button onclick="deleteTask(${task.id})">❌</button>`;
+                        taskList.appendChild(li);
+                    });
+                });
+        }
+
+        // Add a new task
+        function addTask() {
+            const title = document.getElementById('taskTitle').value;
+            fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title })
+            }).then(() => {
+                document.getElementById('taskTitle').value = '';
+                fetchTasks();
+            });
+        }
+
+        // Mark task as completed
+        function completeTask(id) {
+            fetch(`${API_URL}/${id}`, { method: 'PUT' })
+                .then(() => fetchTasks());
+        }
+
+        // Delete a task
+        function deleteTask(id) {
+            fetch(`${API_URL}/${id}`, { method: 'DELETE' })
+                .then(() => fetchTasks());
+        }
+
+        // Fetch tasks on page load
+        window.onload = fetchTasks;
+    </script>
+</body>
+</html>
