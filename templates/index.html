@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
+    <title>Task Nest - Your Personal Task Manager</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Task Manager</h1>
+        <h1>Task Nest</h1>
+        <p>Organize your tasks effortlessly</p>
         <div class="task-input">
-            <input type="text" id="taskTitle" placeholder="Enter task title">
+            <input type="text" id="taskTitle" placeholder="Enter a new task...">
             <button onclick="addTask()">Add Task</button>
         </div>
         <ul id="taskList"></ul>
@@ -28,9 +29,14 @@
                     taskList.innerHTML = '';
                     tasks.forEach(task => {
                         const li = document.createElement('li');
-                        li.innerHTML = `${task.title} - ${task.status}
-                            <button onclick="completeTask(${task.id})">✔</button>
-                            <button onclick="deleteTask(${task.id})">❌</button>`;
+                        li.className = task.status === "completed" ? "completed" : "";
+                        li.innerHTML = `
+                            <span>${task.title}</span>
+                            <div class="actions">
+                                <button class="complete-btn" onclick="completeTask(${task.id})">✔</button>
+                                <button class="delete-btn" onclick="deleteTask(${task.id})">✖</button>
+                            </div>
+                        `;
                         taskList.appendChild(li);
                     });
                 });
